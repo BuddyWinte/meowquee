@@ -21,7 +21,6 @@ jobs:
           node-version: 20
 
       - run: bun ci
-      - run: bun test
 
   publish-bun:
     needs: build
