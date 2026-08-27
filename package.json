@@ -1,6 +1,6 @@
 {
   "name": "meowquee",
-  "version": "0.0.9-beta.1",
+  "version": "0.0.9-beta.2",
   "description": "A lightweight headless marquee engine for building pawesome scrolling content",
   "license": "Apache-2.0",
   "files": [

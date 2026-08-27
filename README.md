@@ -2,10 +2,12 @@
 
 A lightweight headless marquee engine for building pawesome scrolling content.
 
-> **Beta Warning**: Meowquee is currently in `0.0.9-beta.1`. The API may change before the first stable release.
+> **Beta Warning**: Meowquee is currently in beta. The API and internal DOM structure may change before the first stable release.
 
 > [!WARNING]
-> **Known CSS limitation**: Meowquee currently adds internal `<div>` wrappers around the marquee content. Because of this, CSS selectors that rely on the marquee element being the direct parent of its children, such as `.marquee > a`, will not work as expected. We are actively working on improving how Meowquee handles the DOM so existing CSS selectors can be preserved. **thanks for the patience**!
+> Known CSS limitation: Meowquee currently adds internal `<div>` wrappers around the marquee content. Because of this, CSS selectors that rely on the marquee element being the direct parent of its children, such as `.marquee > a`, will not work as expected.
+>
+> We are actively working on improving how Meowquee handles the DOM so existing CSS selectors can be preserved. Thanks for the patience!
 
 ## Features
 
@@ -27,9 +29,9 @@ pnpm install meowquee
 ## Basic Usage
 
 ```js
-import { Meowquee } from "meowquee";
+import { Meowquee } from 'meowquee';
 
-const element = document.querySelector < HTMLElement > "#marquee";
+const element = document.querySelector < HTMLElement > '#marquee';
 
 if (element) {
   const marquee = new Meowquee(element);
@@ -46,7 +48,7 @@ All configuration options are optional.
 ```js
 const marquee = new Meowquee(element, {
   speed: 50,
-  direction: "left",
+  direction: 'left',
   autoplay: true,
   pauseOnHover: true,
   respectReducedMotion: true,
@@ -54,7 +56,9 @@ const marquee = new Meowquee(element, {
 ```
 
 ## Browser Requirements
+
 Meowquee requires a browser environment and uses modern browser APIs including:
+
 - `requestAnimationFrame`
 - `ResizeObserver`
 - `window.matchMedia`

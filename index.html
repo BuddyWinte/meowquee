@@ -60,91 +60,6 @@
         display: inline-block;
         vertical-align: middle;
       }
-
-      .small {
-        width: 100px;
-      }
-
-      .large {
-        width: 700px;
-      }
-
-      .huge-padding {
-        padding: 5rem;
-      }
-
-      .asymmetric-padding {
-        padding: 0.25rem 5rem 3rem 2rem;
-      }
-
-      .tiny-padding {
-        padding: 1px;
-      }
-
-      .no-padding {
-        padding: 0;
-      }
-
-      .multiple {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-
-      .multiple span {
-        display: inline-block;
-        padding: 0.5rem;
-        background: #444;
-      }
-
-      .fixed-height {
-        height: 100px;
-      }
-
-      .overflow-test {
-        overflow: hidden;
-        width: 200px;
-      }
-
-      .vertical-writing {
-        writing-mode: vertical-rl;
-        height: 200px;
-        width: 200px;
-      }
-
-      .rtl {
-        direction: rtl;
-      }
-
-      .breakable {
-        overflow-wrap: anywhere;
-      }
-
-      .marker {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        background: red;
-        vertical-align: middle;
-      }
-
-      .huge {
-        font-size: 100px;
-        line-height: 1;
-      }
-
-      .tiny {
-        font-size: 4px;
-      }
-
-      .colored {
-        color: hotpink;
-      }
-
-      .border-test {
-        border: 10px solid yellow;
-        padding: 20px;
-      }
     </style>
   </head>
 
@@ -155,7 +70,7 @@
     <div class="tests">
       <div class="test">
         <div class="marquee meowquee">
-          <p>this text moves forever</p>
+          <p>this text moves forever</p><p style="margin-left: 1rem;">|</p>
         </div>
       </div>
 
@@ -178,7 +93,7 @@
           const marquee = meowquee(element, {
             speed: 70,
             direction: 'left',
-            pauseOnHover: false,
+            gap: "1rem",
           });
 
           marquees.push(marquee);
