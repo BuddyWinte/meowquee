@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meowquee Stress Test</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem;
+        min-height: 100vh;
+        font-family: sans-serif;
+        background: #111;
+        color: #fff;
+      }
+
+      h1 {
+        margin-top: 0;
+      }
+
+      .tests {
+        display: grid;
+        gap: 1rem;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .test {
+        position: relative;
+      }
+
+      .label {
+        display: block;
+        margin-bottom: 0.35rem;
+        font-size: 0.8rem;
+        opacity: 0.7;
+      }
+
+      .marquee {
+        width: 400px;
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        border: 2px solid #555;
+        padding: 1rem;
+        background: #222;
+      }
+
+      .marquee p {
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      .marquee img {
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .small {
+        width: 100px;
+      }
+
+      .large {
+        width: 700px;
+      }
+
+      .huge-padding {
+        padding: 5rem;
+      }
+
+      .asymmetric-padding {
+        padding: 0.25rem 5rem 3rem 2rem;
+      }
+
+      .tiny-padding {
+        padding: 1px;
+      }
+
+      .no-padding {
+        padding: 0;
+      }
+
+      .multiple {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .multiple span {
+        display: inline-block;
+        padding: 0.5rem;
+        background: #444;
+      }
+
+      .fixed-height {
+        height: 100px;
+      }
+
+      .overflow-test {
+        overflow: hidden;
+        width: 200px;
+      }
+
+      .vertical-writing {
+        writing-mode: vertical-rl;
+        height: 200px;
+        width: 200px;
+      }
+
+      .rtl {
+        direction: rtl;
+      }
+
+      .breakable {
+        overflow-wrap: anywhere;
+      }
+
+      .marker {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: red;
+        vertical-align: middle;
+      }
+
+      .huge {
+        font-size: 100px;
+        line-height: 1;
+      }
+
+      .tiny {
+        font-size: 4px;
+      }
+
+      .colored {
+        color: hotpink;
+      }
+
+      .border-test {
+        border: 10px solid yellow;
+        padding: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Meowquee Stress Test</h1>
+
+    <div class="tests">
+      <div class="test">
+        <span class="label">01 - Normal text</span>
+        <div class="marquee meowquee">
+          <p>this text moves forever</p>
+        </div>
+      </div>
+
+      <div class="test">
+        <span class="label">02 - Big Border, Padding & Special Content</span>
+
+        <div class="marquee meowquee">
+          <p>
+            <img src="https://placehold.co/250x100" width="250" height="100" alt="IMG" />
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import meowquee from './dist/meowquee.mjs';
+
+      const marquees = [];
+
+      document.querySelectorAll('.meowquee').forEach((element, index) => {
+        try {
+          const marquee = meowquee(element, {
+            speed: 70,
+            direction: 'left',
+          });
+
+          marquees.push(marquee);
+
+          console.log(`[Meowquee] Test ${String(index + 1).padStart(2, '0')} initialized`, marquee);
+        } catch (error) {
+          console.error(`[Meowquee] Test ${String(index + 1).padStart(2, '0')} FAILED`, error);
+        }
+      });
+
+      window.marquees = marquees;
+    </script>
+  </body>
+</html>
