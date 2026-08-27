@@ -149,19 +149,17 @@
   </head>
 
   <body>
-    <h1>Meowquee Stress Test</h1>
+    <h1>Meowquee Test Suite thing</h1>
+    <p>meow</p>
 
     <div class="tests">
       <div class="test">
-        <span class="label">01 - Normal text</span>
         <div class="marquee meowquee">
           <p>this text moves forever</p>
         </div>
       </div>
 
       <div class="test">
-        <span class="label">02 - Big Border, Padding & Special Content</span>
-
         <div class="marquee meowquee">
           <p>
             <img src="https://placehold.co/250x100" width="250" height="100" alt="IMG" />
@@ -180,6 +178,7 @@
           const marquee = meowquee(element, {
             speed: 70,
             direction: 'left',
+            pauseOnHover: false,
           });
 
           marquees.push(marquee);

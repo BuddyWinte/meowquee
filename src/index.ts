@@ -7,14 +7,25 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-import { Meowquee } from './meowquee';
-import type { MeowqueeConfig } from './types';
+ import { Meowquee } from './meowquee';
 
-export { Meowquee };
-export default meowquee;
+ import type {
+   MeowqueeConfig,
+   MeowqueeDirection,
+ } from './types';
 
-export type { MeowqueeConfig, MeowqueeDirection } from './types';
+ export { Meowquee };
 
-export function meowquee(element: HTMLElement, config?: MeowqueeConfig): Meowquee {
-  return new Meowquee(element, config);
-}
+ export type {
+   MeowqueeConfig,
+   MeowqueeDirection,
+ };
+
+ export function meowquee(
+   element: HTMLElement,
+   config?: MeowqueeConfig,
+ ): Meowquee {
+   return new Meowquee(element, config);
+ }
+
+ export default meowquee;

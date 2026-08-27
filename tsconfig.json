@@ -5,20 +5,15 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
-
     "strict": true,
     "skipLibCheck": true,
-
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-
     "rootDir": "./src",
     "noEmit": false,
-
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false

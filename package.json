@@ -32,6 +32,6 @@
     "rollup": "^4.63.0",
     "rollup-plugin-dts": "^6.5.1",
     "tslib": "^2.8.1",
-    "typescript": "^7"
+    "typescript": "^6"
   }
 }

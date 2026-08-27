@@ -1,4 +1,18 @@
-import type { MeowqueeConfig, MeowqueeDirection } from './types';
+import type {
+  MeowqueeConfig,
+  MeowqueeDirection,
+} from './types';
+
+import {
+  createMeowqueeDOM,
+  restoreMeowqueeDOM,
+  type MeowqueeDOM,
+} from './dom';
+
+import {
+  getStartPosition,
+  updatePosition,
+} from './animation';
 
 export class Meowquee {
   readonly element: HTMLElement;
@@ -25,51 +39,39 @@ export class Meowquee {
 
   private resizeObserver: ResizeObserver | null = null;
 
-  constructor(element: HTMLElement, config: MeowqueeConfig = {}) {
+  constructor(
+    element: HTMLElement,
+    config: MeowqueeConfig = {},
+  ) {
     this.element = element;
 
     this.speed = config.speed ?? 50;
     this.direction = config.direction ?? 'left';
-    this.pauseOnHover = config.pauseOnHover ?? true; // Maybe we should default to false in the future to avoid confusion?
-    this.respectReducedMotion = config.respectReducedMotion ?? true;
+    this.pauseOnHover = config.pauseOnHover ?? true;
+    this.respectReducedMotion =
+      config.respectReducedMotion ?? true;
     this.autoplay = config.autoplay ?? true;
 
+    const dom: MeowqueeDOM = createMeowqueeDOM(element);
 
-    this.viewport = document.createElement('div');
-    this.track = document.createElement('div');
+    this.viewport = dom.viewport;
+    this.track = dom.track;
 
     this.initialize();
   }
 
   private initialize(): void {
-    const { element, viewport, track } = this;
-
-    viewport.style.width = '100%';
-    viewport.style.overflow = 'hidden';
-    viewport.style.whiteSpace = 'nowrap';
-
-    track.style.width = 'max-content';
-    track.style.whiteSpace = 'nowrap';
-    track.style.willChange = 'transform';
-
-    while (element.firstChild) {
-      track.appendChild(element.firstChild);
-    }
-
     if (this.pauseOnHover) {
-      viewport.addEventListener('mouseenter', () => this.pause());
-      viewport.addEventListener('mouseleave', () => this.play());
-    }
+      this.viewport.addEventListener(
+        'mouseenter',
+        this.handleMouseEnter,
+      );
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (this.autoplay) {
-      if (!this.respectReducedMotion || !prefersReducedMotion) {
-        this.play();
-      }
+      this.viewport.addEventListener(
+        'mouseleave',
+        this.handleMouseLeave,
+      );
     }
-
-    viewport.appendChild(track);
-    element.appendChild(viewport);
 
     this.updateDimensions();
     this.resetPosition();
@@ -80,10 +82,29 @@ export class Meowquee {
         this.resetPosition();
       });
 
-      this.resizeObserver.observe(viewport);
-      this.resizeObserver.observe(track);
+      this.resizeObserver.observe(this.element);
+      this.resizeObserver.observe(this.track);
+    }
+
+    const prefersReducedMotion = window
+      .matchMedia('(prefers-reduced-motion: reduce)')
+      .matches;
+
+    if (
+      this.autoplay &&
+      (!this.respectReducedMotion || !prefersReducedMotion)
+    ) {
+      this.play();
     }
   }
+
+  private handleMouseEnter = (): void => {
+    this.pause();
+  };
+
+  private handleMouseLeave = (): void => {
+    this.play();
+  };
 
   private updateDimensions(): void {
     if (this.destroyed) {
@@ -91,22 +112,23 @@ export class Meowquee {
     }
 
     this.viewportWidth = this.viewport.clientWidth;
-
-    this.trackWidth = this.track.getBoundingClientRect().width;
-  }
-
-  private getStartPosition(): number {
-    return this.direction === 'left' ? this.viewportWidth : -this.trackWidth;
+    this.trackWidth =
+      this.track.getBoundingClientRect().width;
   }
 
   private resetPosition(): void {
-    this.position = this.getStartPosition();
+    this.position = getStartPosition(
+      this.direction,
+      this.viewportWidth,
+      this.trackWidth,
+    );
 
     this.render();
   }
 
   private render(): void {
-    this.track.style.transform = `translate3d(${this.position}px, 0, 0)`;
+    this.track.style.transform =
+      `translate3d(${this.position}px, 0, 0)`;
   }
 
   private tick = (timestamp: number): void => {
@@ -119,35 +141,28 @@ export class Meowquee {
     this.lastTimestamp = timestamp;
 
     if (previousTimestamp === null) {
-      this.animationFrame = window.requestAnimationFrame(
-        (timestamp) => this.tick(timestamp),
-      );
+      this.animationFrame =
+        window.requestAnimationFrame(this.tick);
 
       return;
     }
 
-    const delta = Math.min(timestamp - previousTimestamp, 100) / 1000;
-    const distance = this.speed * delta;
+    const delta =
+      Math.min(timestamp - previousTimestamp, 100) / 1000;
 
-    if (this.direction === 'left') {
-      this.position -= distance;
-
-      if (this.position <= -this.trackWidth) {
-        this.position = this.viewportWidth;
-      }
-    } else {
-      this.position += distance;
-
-      if (this.position >= this.viewportWidth) {
-        this.position = -this.trackWidth;
-      }
-    }
+    this.position = updatePosition(
+      this.position,
+      this.speed,
+      this.direction,
+      delta,
+      this.viewportWidth,
+      this.trackWidth,
+    );
 
     this.render();
 
-    this.animationFrame = window.requestAnimationFrame(
-      (timestamp) => this.tick(timestamp),
-    );
+    this.animationFrame =
+      window.requestAnimationFrame(this.tick);
   };
 
   play(): void {
@@ -158,7 +173,8 @@ export class Meowquee {
     this.playing = true;
     this.lastTimestamp = null;
 
-    window.requestAnimationFrame((timestamp) => this.tick(timestamp));
+    this.animationFrame =
+      window.requestAnimationFrame(this.tick);
   }
 
   pause(): void {
@@ -170,8 +186,7 @@ export class Meowquee {
     this.lastTimestamp = null;
 
     if (this.animationFrame !== null) {
-      cancelAnimationFrame(this.animationFrame);
-
+      window.cancelAnimationFrame(this.animationFrame);
       this.animationFrame = null;
     }
   }
@@ -186,11 +201,20 @@ export class Meowquee {
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
 
-    while (this.track.firstChild) {
-      this.element.appendChild(this.track.firstChild);
-    }
+    this.viewport.removeEventListener(
+      'mouseenter',
+      this.handleMouseEnter,
+    );
 
-    this.viewport.remove();
+    this.viewport.removeEventListener(
+      'mouseleave',
+      this.handleMouseLeave,
+    );
+
+    restoreMeowqueeDOM(this.element, {
+      viewport: this.viewport,
+      track: this.track,
+    });
 
     this.destroyed = true;
   }
@@ -206,15 +230,22 @@ export class Meowquee {
 
   setSpeed(speed: number): void {
     if (!Number.isFinite(speed) || speed < 0) {
-      throw new TypeError('Meowquee speed must be a non-negative number.');
+      throw new TypeError(
+        'Meowquee speed must be a non-negative number.',
+      );
     }
 
     this.speed = speed;
   }
 
   setDirection(direction: MeowqueeDirection): void {
-    if (direction !== 'left' && direction !== 'right') {
-      throw new TypeError('Meowquee direction must be either "left" or "right".');
+    if (
+      direction !== 'left' &&
+      direction !== 'right'
+    ) {
+      throw new TypeError(
+        'Meowquee direction must be either "left" or "right".',
+      );
     }
 
     if (this.direction === direction) {
