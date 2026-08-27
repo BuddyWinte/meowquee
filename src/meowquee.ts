@@ -8,6 +8,9 @@ export class Meowquee {
 
   private speed: number;
   private direction: MeowqueeDirection;
+  private pauseOnHover: boolean;
+  private respectReducedMotion: boolean;
+  private autoplay: boolean;
 
   private position = 0;
 
@@ -27,15 +30,15 @@ export class Meowquee {
 
     this.speed = config.speed ?? 50;
     this.direction = config.direction ?? 'left';
+    this.pauseOnHover = config.pauseOnHover ?? true; // Maybe we should default to false in the future to avoid confusion?
+    this.respectReducedMotion = config.respectReducedMotion ?? true;
+    this.autoplay = config.autoplay ?? true;
+
 
     this.viewport = document.createElement('div');
     this.track = document.createElement('div');
 
     this.initialize();
-
-    if (config.autoplay ?? true) {
-      this.play();
-    }
   }
 
   private initialize(): void {
@@ -51,6 +54,18 @@ export class Meowquee {
 
     while (element.firstChild) {
       track.appendChild(element.firstChild);
+    }
+
+    if (this.pauseOnHover) {
+      viewport.addEventListener('mouseenter', () => this.pause());
+      viewport.addEventListener('mouseleave', () => this.play());
+    }
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (this.autoplay) {
+      if (!this.respectReducedMotion || !prefersReducedMotion) {
+        this.play();
+      }
     }
 
     viewport.appendChild(track);
@@ -104,13 +119,14 @@ export class Meowquee {
     this.lastTimestamp = timestamp;
 
     if (previousTimestamp === null) {
-      this.animationFrame = requestAnimationFrame(this.tick);
+      this.animationFrame = window.requestAnimationFrame(
+        (timestamp) => this.tick(timestamp),
+      );
 
       return;
     }
 
     const delta = Math.min(timestamp - previousTimestamp, 100) / 1000;
-
     const distance = this.speed * delta;
 
     if (this.direction === 'left') {
@@ -129,7 +145,9 @@ export class Meowquee {
 
     this.render();
 
-    this.animationFrame = requestAnimationFrame(this.tick);
+    this.animationFrame = window.requestAnimationFrame(
+      (timestamp) => this.tick(timestamp),
+    );
   };
 
   play(): void {
@@ -140,7 +158,7 @@ export class Meowquee {
     this.playing = true;
     this.lastTimestamp = null;
 
-    this.animationFrame = requestAnimationFrame(this.tick);
+    window.requestAnimationFrame((timestamp) => this.tick(timestamp));
   }
 
   pause(): void {
