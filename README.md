@@ -4,6 +4,9 @@ A lightweight headless marquee engine for building pawesome scrolling content.
 
 > **Beta Warning**: Meowquee is currently in `0.0.9-beta.1`. The API may change before the first stable release.
 
+> [!WARNING]
+> **Known CSS limitation**: Meowquee currently adds internal `<div>` wrappers around the marquee content. Because of this, CSS selectors that rely on the marquee element being the direct parent of its children, such as `.marquee > a`, will not work as expected. We are actively working on improving how Meowquee handles the DOM so existing CSS selectors can be preserved. **thanks for the patience**!
+
 ## Features
 
 - Pawesomely lightweight, dependency-free marquee engine

@@ -37,4 +37,11 @@ export interface MeowqueeConfig {
    * @default true
    */
   respectReducedMotion?: boolean;
+
+  /**
+   * Automatically repeat the content until the marquee has enough content for continuous scrolling.
+   *
+   * @default false
+   */
+  loop?: boolean;
 }
