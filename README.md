@@ -1,8 +1,66 @@
 # Meowquee
 
-> DO NOT USE IN PRODUCTION, NOT DONE
+A lightweight headless marquee engine for building pawesome scrolling content.
+
+> **Beta Warning**: Meowquee is currently in `0.0.9-beta.1`. The API may change before the first stable release.
+
+## Features
+
+- Pawesomely lightweight, dependency-free marquee engine
+- Typescript-first
+- Completely plug-and-play
+- Accessible by default (NOT FULLY, WE ARE STILL WORKING ON THIS BEFORE V1.0.0)
+- Framework agnostic
+- Headless (no forced styles)
+
+## Installation
+
+```bash
+npm install meowquee
+bun add meowquee
+pnpm install meowquee
+```
+
+## Basic Usage
+
+```js
+import { Meowquee } from "meowquee";
+
+const element = document.querySelector < HTMLElement > "#marquee";
+
+if (element) {
+  const marquee = new Meowquee(element);
+}
+<div id="marquee">Hello! This content is powered by Meowquee.</div>;
+```
+
+Meowquee takes the existing contents of the element and turns them into a scrolling marquee.
+
+## Configuration
+
+All configuration options are optional.
+
+```js
+const marquee = new Meowquee(element, {
+  speed: 50,
+  direction: "left",
+  autoplay: true,
+  pauseOnHover: true,
+  respectReducedMotion: true,
+});
+```
+
+## Browser Requirements
+Meowquee requires a browser environment and uses modern browser APIs including:
+- `requestAnimationFrame`
+- `ResizeObserver`
+- `window.matchMedia`
+
+It is not intended for server-side execution.
 
 ---
+
+## License
 
 Copyright 2026 BuddyWinte
 
