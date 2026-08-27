@@ -4,8 +4,8 @@ export interface MeowqueeConfig {
   /**
    * Movement speed in pixels per second.
    *
-   * @default 70
-   * @min 1
+   * @default 50
+   * @min 0
    * @max Infinity
    */
   speed?: number;
@@ -32,16 +32,9 @@ export interface MeowqueeConfig {
   pauseOnHover?: boolean;
 
   /**
-   * Respect the user's reduced motion preference. We highly recommend having this enabled
+   * Respect the user's reduced motion preference.
    *
    * @default true
    */
   respectReducedMotion?: boolean;
-
-  /**
-   * Automatically repeat the content until the marquee has enough content for continuous scrolling.
-   *
-   * @default false
-   */
-  loop?: boolean;
 }
