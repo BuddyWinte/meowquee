@@ -40,6 +40,40 @@ export function createMeowqueeDOM(element: HTMLElement): MeowqueeDOM {
   };
 }
 
+export function configureAccessibility(
+  element: HTMLElement,
+  dom: MeowqueeDOM,
+  accessibility: 'decorative' | 'content',
+  ariaLabel?: string,
+): void {
+  if (accessibility === 'decorative') {
+    element.setAttribute('aria-hidden', 'true');
+    element.inert = true;
+
+    return;
+  }
+
+  element.removeAttribute('aria-hidden');
+  element.inert = false;
+
+  if (ariaLabel !== undefined) {
+    element.setAttribute('aria-label', ariaLabel);
+  }
+
+  dom.viewport.removeAttribute('aria-hidden');
+  dom.viewport.inert = false;
+}
+
+export function createRepeat(content: HTMLDivElement): HTMLDivElement {
+  const clone = content.cloneNode(true) as HTMLDivElement;
+
+  clone.dataset.meowqueeRepeat = 'true';
+  clone.setAttribute('aria-hidden', 'true');
+  clone.inert = true;
+
+  return clone;
+}
+
 export function restoreMeowqueeDOM(element: HTMLElement, dom: MeowqueeDOM): void {
   const clones = dom.track.querySelectorAll('[data-meowquee-repeat]');
 

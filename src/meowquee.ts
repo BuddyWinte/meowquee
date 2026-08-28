@@ -1,6 +1,12 @@
 import { getStartPosition, updatePosition } from './animation';
-import { createMeowqueeDOM, restoreMeowqueeDOM, type MeowqueeDOM } from './dom';
-import type { MeowqueeConfig, MeowqueeDirection } from './types';
+import {
+  configureAccessibility,
+  createMeowqueeDOM,
+  createRepeat,
+  restoreMeowqueeDOM,
+  type MeowqueeDOM,
+} from './dom';
+import type { MeowqueeAccessibility, MeowqueeConfig, MeowqueeDirection } from './types';
 
 export class Meowquee {
   readonly element: HTMLElement;
@@ -12,20 +18,23 @@ export class Meowquee {
   private speed: number;
   private direction: MeowqueeDirection;
   private pauseOnHover: boolean;
+  private pauseOnFocus: boolean;
   private respectReducedMotion: boolean;
   private autoplay: boolean;
   private repeat: boolean;
   private gap: string;
+  private accessibility: MeowqueeAccessibility;
+  private ariaLabel?: string;
+  private observeResize: boolean;
+  private observeMutations: boolean;
 
   private contentWidth = 0;
   private repeatWidth = 0;
+  private viewportWidth = 0;
 
   private readonly repeatNodes: HTMLDivElement[] = [];
 
   private position = 0;
-
-  private viewportWidth = 0;
-  private trackWidth = 0;
 
   private animationFrame: number | null = null;
   private lastTimestamp: number | null = null;
@@ -34,6 +43,12 @@ export class Meowquee {
   private destroyed = false;
 
   private resizeObserver: ResizeObserver | null = null;
+  private mutationObserver: MutationObserver | null = null;
+  private reducedMotionQuery: MediaQueryList | null = null;
+
+  private hovered = false;
+  private focused = false;
+  private reducedMotion = false;
 
   constructor(element: HTMLElement, config: MeowqueeConfig = {}) {
     this.element = element;
@@ -41,10 +56,17 @@ export class Meowquee {
     this.speed = config.speed ?? 50;
     this.direction = config.direction ?? 'left';
     this.pauseOnHover = config.pauseOnHover ?? true;
+    this.pauseOnFocus = config.pauseOnFocus ?? true;
     this.respectReducedMotion = config.respectReducedMotion ?? true;
     this.autoplay = config.autoplay ?? true;
     this.repeat = config.repeat ?? true;
     this.gap = config.gap ?? '0px';
+    this.accessibility = config.accessibility ?? 'decorative';
+    this.ariaLabel = config.ariaLabel;
+    this.observeResize = config.observeResize ?? true;
+    this.observeMutations = config.observeMutations ?? true;
+
+    this.validateConfiguration();
 
     const dom: MeowqueeDOM = createMeowqueeDOM(element);
 
@@ -55,32 +77,101 @@ export class Meowquee {
     this.initialize();
   }
 
+  private validateConfiguration(): void {
+    if (!Number.isFinite(this.speed) || this.speed < 0) {
+      throw new TypeError('Meowquee speed must be a non-negative number.');
+    }
+
+    if (this.direction !== 'left' && this.direction !== 'right') {
+      throw new TypeError('Meowquee direction must be either "left" or "right".');
+    }
+
+    if (this.accessibility !== 'decorative' && this.accessibility !== 'content') {
+      throw new TypeError('Meowquee accessibility must be either "decorative" or "content".');
+    }
+
+    if (typeof this.gap !== 'string') {
+      throw new TypeError('Meowquee gap must be a CSS length string.');
+    }
+  }
+
   private initialize(): void {
     this.track.style.gap = this.gap;
 
+    configureAccessibility(
+      this.element,
+      {
+        viewport: this.viewport,
+        track: this.track,
+        content: this.content,
+      },
+      this.accessibility,
+      this.ariaLabel,
+    );
+
     if (this.pauseOnHover) {
       this.viewport.addEventListener('mouseenter', this.handleMouseEnter);
+
       this.viewport.addEventListener('mouseleave', this.handleMouseLeave);
     }
+
+    if (this.pauseOnFocus) {
+      this.viewport.addEventListener('focusin', this.handleFocusIn);
+
+      this.viewport.addEventListener('focusout', this.handleFocusOut);
+    }
+
+    this.setupReducedMotion();
+    this.setupResizeObserver();
+    this.setupMutationObserver();
 
     this.updateDimensions();
     this.resetPosition();
 
-    if (typeof ResizeObserver !== 'undefined') {
-      this.resizeObserver = new ResizeObserver(() => {
-        this.updateDimensions();
-        this.resetPosition();
-      });
-
-      this.resizeObserver.observe(this.element);
-      this.resizeObserver.observe(this.track);
-    }
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (this.autoplay && (!this.respectReducedMotion || !prefersReducedMotion)) {
+    if (this.autoplay && !this.shouldPause()) {
       this.play();
     }
+  }
+
+  private setupReducedMotion(): void {
+    if (!this.respectReducedMotion) {
+      return;
+    }
+
+    this.reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    this.reducedMotion = this.reducedMotionQuery.matches;
+
+    this.reducedMotionQuery.addEventListener('change', this.handleReducedMotionChange);
+  }
+
+  private setupResizeObserver(): void {
+    if (!this.observeResize || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    this.resizeObserver = new ResizeObserver(() => {
+      this.updateDimensions();
+    });
+
+    this.resizeObserver.observe(this.element);
+    this.resizeObserver.observe(this.track);
+  }
+
+  private setupMutationObserver(): void {
+    if (!this.observeMutations || typeof MutationObserver === 'undefined') {
+      return;
+    }
+
+    this.mutationObserver = new MutationObserver(() => {
+      this.updateDimensions();
+    });
+
+    this.mutationObserver.observe(this.content, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
   }
 
   private buildRepeats(): void {
@@ -93,11 +184,7 @@ export class Meowquee {
     const copiesNeeded = Math.ceil(this.viewportWidth / this.repeatWidth) + 1;
 
     for (let copy = 0; copy < copiesNeeded; copy++) {
-      const clone = this.content.cloneNode(true) as HTMLDivElement;
-
-      clone.dataset.meowqueeRepeat = 'true';
-      clone.setAttribute('aria-hidden', 'true');
-      clone.inert = true;
+      const clone = createRepeat(this.content);
 
       this.track.appendChild(clone);
       this.repeatNodes.push(clone);
@@ -106,7 +193,7 @@ export class Meowquee {
 
   private clearRepeats(): void {
     for (const node of this.repeatNodes) {
-      node.parentNode?.removeChild(node);
+      node.remove();
     }
 
     this.repeatNodes.length = 0;
@@ -119,28 +206,84 @@ export class Meowquee {
   }
 
   private handleMouseEnter = (): void => {
-    this.pause();
+    this.hovered = true;
+    this.updatePlaybackState();
   };
 
   private handleMouseLeave = (): void => {
-    this.play();
+    this.hovered = false;
+    this.updatePlaybackState();
   };
+
+  private handleFocusIn = (): void => {
+    this.focused = true;
+    this.updatePlaybackState();
+  };
+
+  private handleFocusOut = (): void => {
+    this.focused = this.viewport.contains(document.activeElement);
+
+    this.updatePlaybackState();
+  };
+
+  private handleReducedMotionChange = (event: MediaQueryListEvent): void => {
+    this.reducedMotion = event.matches;
+    this.updatePlaybackState();
+  };
+
+  private shouldPause(): boolean {
+    if (this.hovered) {
+      return true;
+    }
+
+    if (this.focused) {
+      return true;
+    }
+
+    if (this.respectReducedMotion && this.reducedMotion) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private updatePlaybackState(): void {
+    if (this.shouldPause()) {
+      this.pause();
+      return;
+    }
+
+    if (this.autoplay) {
+      this.play();
+    }
+  }
 
   private updateDimensions(): void {
     if (this.destroyed) {
       return;
     }
 
+    const previousRepeatWidth = this.repeatWidth;
+
     this.viewportWidth = this.viewport.clientWidth;
 
     this.clearRepeats();
 
     this.contentWidth = this.content.getBoundingClientRect().width;
+
     this.repeatWidth = this.contentWidth + this.getGapWidth();
 
     this.buildRepeats();
 
-    this.trackWidth = this.track.getBoundingClientRect().width;
+    if (previousRepeatWidth > 0 && this.repeatWidth > 0 && this.repeat) {
+      this.position = this.position % this.repeatWidth;
+
+      if (this.position > 0) {
+        this.position -= this.repeatWidth;
+      }
+
+      this.render();
+    }
   }
 
   private resetPosition(): void {
@@ -169,21 +312,22 @@ export class Meowquee {
 
     if (previousTimestamp === null) {
       this.animationFrame = window.requestAnimationFrame(this.tick);
+
       return;
     }
 
     const delta = Math.min(timestamp - previousTimestamp, 100) / 1000;
 
-    this.position = updatePosition(
-      this.position,
-      this.speed,
-      this.direction,
+    this.position = updatePosition({
+      position: this.position,
+      speed: this.speed,
+      direction: this.direction,
       delta,
-      this.viewportWidth,
-      this.contentWidth,
-      this.repeat,
-      this.repeatWidth,
-    );
+      viewportWidth: this.viewportWidth,
+      contentWidth: this.contentWidth,
+      repeat: this.repeat,
+      repeatWidth: this.repeatWidth,
+    });
 
     this.render();
 
@@ -191,7 +335,7 @@ export class Meowquee {
   };
 
   play(): void {
-    if (this.destroyed || this.playing) {
+    if (this.destroyed || this.playing || this.shouldPause()) {
       return;
     }
 
@@ -211,6 +355,7 @@ export class Meowquee {
 
     if (this.animationFrame !== null) {
       window.cancelAnimationFrame(this.animationFrame);
+
       this.animationFrame = null;
     }
   }
@@ -225,10 +370,25 @@ export class Meowquee {
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
 
+    this.mutationObserver?.disconnect();
+    this.mutationObserver = null;
+
+    this.reducedMotionQuery?.removeEventListener('change', this.handleReducedMotionChange);
+
+    this.reducedMotionQuery = null;
+
     this.viewport.removeEventListener('mouseenter', this.handleMouseEnter);
+
     this.viewport.removeEventListener('mouseleave', this.handleMouseLeave);
 
+    this.viewport.removeEventListener('focusin', this.handleFocusIn);
+
+    this.viewport.removeEventListener('focusout', this.handleFocusOut);
+
     this.clearRepeats();
+
+    this.element.removeAttribute('aria-hidden');
+    this.element.inert = false;
 
     restoreMeowqueeDOM(this.element, {
       viewport: this.viewport,
@@ -245,7 +405,6 @@ export class Meowquee {
     }
 
     this.updateDimensions();
-    this.resetPosition();
   }
 
   setSpeed(speed: number): void {
@@ -266,10 +425,21 @@ export class Meowquee {
     }
 
     this.direction = direction;
-    this.resetPosition();
   }
 
   get isPlaying(): boolean {
     return this.playing;
+  }
+
+  get isDestroyed(): boolean {
+    return this.destroyed;
+  }
+
+  get currentSpeed(): number {
+    return this.speed;
+  }
+
+  get currentDirection(): MeowqueeDirection {
+    return this.direction;
   }
 }

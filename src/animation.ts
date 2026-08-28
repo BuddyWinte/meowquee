@@ -1,5 +1,16 @@
 import type { MeowqueeDirection } from './types';
 
+export interface MeowqueeAnimationState {
+  position: number;
+  speed: number;
+  direction: MeowqueeDirection;
+  delta: number;
+  viewportWidth: number;
+  contentWidth: number;
+  repeat: boolean;
+  repeatWidth: number;
+}
+
 export function getStartPosition(
   direction: MeowqueeDirection,
   viewportWidth: number,
@@ -13,16 +24,16 @@ export function getStartPosition(
   return direction === 'left' ? viewportWidth : -contentWidth;
 }
 
-export function updatePosition(
-  position: number,
-  speed: number,
-  direction: MeowqueeDirection,
-  delta: number,
-  viewportWidth: number,
-  contentWidth: number,
-  repeat: boolean,
-  repeatWidth: number,
-): number {
+export function updatePosition({
+  position,
+  speed,
+  direction,
+  delta,
+  viewportWidth,
+  contentWidth,
+  repeat,
+  repeatWidth,
+}: MeowqueeAnimationState): number {
   const distance = speed * delta;
 
   if (direction === 'left') {
@@ -35,16 +46,18 @@ export function updatePosition(
     } else if (position <= -contentWidth) {
       position = viewportWidth;
     }
-  } else {
-    position += distance;
 
-    if (repeat) {
-      if (position >= repeatWidth) {
-        position -= repeatWidth;
-      }
-    } else if (position >= viewportWidth) {
-      position = -contentWidth;
+    return position;
+  }
+
+  position += distance;
+
+  if (repeat) {
+    if (position >= repeatWidth) {
+      position -= repeatWidth;
     }
+  } else if (position >= viewportWidth) {
+    position = -contentWidth;
   }
 
   return position;
