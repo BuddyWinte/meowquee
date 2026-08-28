@@ -3,8 +3,12 @@ name: Pull Request Checks
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   check:
+    name: Check
     runs-on: ubuntu-latest
 
     steps:
@@ -22,5 +26,14 @@ jobs:
       - name: Format
         run: bun run format --check
 
+      - name: Lint
+        run: bun run lint
+
       - name: Type check
         run: bun run typecheck
+
+      - name: Test
+        run: bun run test
+
+      - name: Build
+        run: bun run build

@@ -16,11 +16,14 @@
       "import": "./dist/meowquee.mjs"
     }
   },
+  "sideEffects": false,
   "scripts": {
     "build": "rollup -c",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "format": "oxfmt",
+    "lint": "oxlint .",
+    "check": "bun run typecheck && bun run lint && bun run test",
     "dev": "bunx serve ."
   },
   "devDependencies": {
@@ -33,5 +36,13 @@
     "rollup-plugin-dts": "^6.5.1",
     "tslib": "^2.8.1",
     "typescript": "^6"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BuddyWinte/meowquee.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BuddyWinte/meowquee/issues"
+  },
+  "homepage": "https://github.com/BuddyWinte/meowquee"
 }
