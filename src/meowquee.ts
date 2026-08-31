@@ -292,6 +292,7 @@ export class Meowquee {
       this.viewportWidth,
       this.contentWidth,
       this.repeat,
+      this.repeatWidth,
     );
 
     this.render();

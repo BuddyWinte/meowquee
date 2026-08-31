@@ -16,9 +16,13 @@ export function getStartPosition(
   viewportWidth: number,
   contentWidth: number,
   repeat: boolean,
+  repeatWidth: number,
 ): number {
   if (repeat) {
-    return 0;
+    // Repeats are appended after the original content, so nothing sits to its
+    // left. Moving right has to start a full repeat back or the leading edge
+    // drags an empty stretch of track across the viewport.
+    return direction === 'right' ? -repeatWidth : 0;
   }
 
   return direction === 'left' ? viewportWidth : -contentWidth;
@@ -53,7 +57,7 @@ export function updatePosition({
   position += distance;
 
   if (repeat) {
-    if (position >= repeatWidth) {
+    if (position >= 0) {
       position -= repeatWidth;
     }
   } else if (position >= viewportWidth) {
