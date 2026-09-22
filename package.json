@@ -2,11 +2,20 @@
   "name": "meowquee",
   "version": "1.0.0",
   "description": "A lightweight headless marquee engine for building pawesome scrolling content",
+  "homepage": "https://github.com/BuddyWinte/meowquee",
+  "bugs": {
+    "url": "https://github.com/BuddyWinte/meowquee/issues"
+  },
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BuddyWinte/meowquee.git"
+  },
   "files": [
     "dist"
   ],
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/meowquee.mjs",
   "module": "./dist/meowquee.mjs",
   "types": "./dist/index.d.ts",
@@ -14,9 +23,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/meowquee.mjs"
-    }
+    },
+    "./iife": "./dist/meowquee.iife.min.js",
+    "./iife-unminified": "./dist/meowquee.iife.js"
   },
-  "sideEffects": false,
   "scripts": {
     "build": "rollup -c",
     "test": "bun test",
@@ -36,13 +46,5 @@
     "rollup-plugin-dts": "^6.5.1",
     "tslib": "^2.8.1",
     "typescript": "^6"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BuddyWinte/meowquee.git"
-  },
-  "bugs": {
-    "url": "https://github.com/BuddyWinte/meowquee/issues"
-  },
-  "homepage": "https://github.com/BuddyWinte/meowquee"
+  }
 }

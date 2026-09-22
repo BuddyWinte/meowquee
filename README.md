@@ -35,17 +35,32 @@ pnpm install meowquee
 
 ### CDN
 
-Meowquee can also be loaded directly from a CDN:
+Meowquee can also be loaded directly from a CDN.
 
-```html
+#### ESM
+
+````html
 <script type="module">
-  import Meowquee from "https://cdn.jsdelivr.net/npm/meowquee/dist/meowquee.mjs";
-  const element = document.querySelector("#marquee");
+  import { Meowquee } from 'https://cdn.jsdelivr.net/npm/meowquee/dist/meowquee.mjs';
+
+  const element = document.querySelector('#marquee');
+
   if (element) {
     const marquee = new Meowquee(element);
   }
 </script>
-```
+
+#### IIFE (not recommended) ```html
+<script src="https://cdn.jsdelivr.net/npm/meowquee/dist/meowquee.iife.min.js"></script>
+
+<script>
+  const element = document.querySelector('#marquee');
+
+  if (element) {
+    const marquee = new Meowquee.Meowquee(element);
+  }
+</script>
+````
 
 ## Basic Usage
 
@@ -54,9 +69,9 @@ Meowquee can also be loaded directly from a CDN:
 ```
 
 ```js
-import { Meowquee } from "meowquee";
+import { Meowquee } from 'meowquee';
 
-const element = document.querySelector("#marquee");
+const element = document.querySelector('#marquee');
 
 if (element) {
   const marquee = new Meowquee(element);
@@ -72,14 +87,14 @@ All options are optional.
 ```js
 const marquee = new Meowquee(element, {
   speed: 50,
-  direction: "left",
+  direction: 'left',
   autoplay: true,
   pauseOnHover: true,
   pauseOnFocus: true,
-  accessibility: "decorative",
+  accessibility: 'decorative',
   respectReducedMotion: true,
   repeat: true,
-  gap: "0px",
+  gap: '0px',
   observeResize: true,
   observeMutations: true,
 });
@@ -109,8 +124,8 @@ For genuinely meaningful marquee content, use:
 
 ```js
 new Meowquee(element, {
-  accessibility: "content",
-  ariaLabel: "Latest announcements",
+  accessibility: 'content',
+  ariaLabel: 'Latest announcements',
 });
 ```
 
