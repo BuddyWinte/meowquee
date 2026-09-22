@@ -132,6 +132,40 @@ new Meowquee(element, {
 Even in content mode, repeated copies are hidden from assistive technologies to prevent duplicate content.
 Meowquee also pauses when focused or hovered by default and respects `prefers-reduced-motion`.
 
+## Events
+
+Meowquee provides three events: `play`, `pause`, and `destroy`.
+
+### Subscribing to Events
+
+```js
+const handlePlay = () => {
+  console.log('playing');
+};
+
+const handlePause = () => {
+  console.log('paused');
+};
+
+const handleDestroy = () => {
+  console.log('destroyed');
+};
+
+marquee.on('play', handlePlay);
+marquee.on('pause', handlePause);
+marquee.on('destroy', handleDestroy);
+```
+
+### Unsubscribing from Events
+
+Pass the same function reference used when subscribing:
+
+```js
+marquee.off('play', handlePlay);
+marquee.off('pause', handlePause);
+marquee.off('destroy', handleDestroy);
+```
+
 ## Browser Requirements
 
 Meowquee requires a browser environment and uses modern browser APIs including:

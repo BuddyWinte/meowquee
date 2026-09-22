@@ -6,7 +6,7 @@ import {
   restoreMeowqueeDOM,
   type MeowqueeDOM,
 } from './dom';
-import type { MeowqueeAccessibility, MeowqueeConfig, MeowqueeDirection } from './types';
+import type { MeowqueeAccessibility, MeowqueeConfig, MeowqueeDirection, MeowqueeEvent, MeowqueeEventHandler } from './types';
 
 export class Meowquee {
   readonly element: HTMLElement;
@@ -301,6 +301,20 @@ export class Meowquee {
     this.track.style.transform = `translate3d(${this.position}px, 0, 0)`;
   }
 
+  private readonly eventHandlers: {
+    [K in MeowqueeEvent]: Set<MeowqueeEventHandler>;
+  } = {
+    play: new Set(),
+    pause: new Set(),
+    destroy: new Set(),
+    }
+
+  private emit(event: MeowqueeEvent): void {
+    for (const handler of this.eventHandlers[event]) {
+      handler();
+    }
+  }
+
   private tick = (timestamp: number): void => {
     if (!this.playing || this.destroyed) {
       return;
@@ -343,6 +357,7 @@ export class Meowquee {
     this.lastTimestamp = null;
 
     this.animationFrame = window.requestAnimationFrame(this.tick);
+    this.emit('play');
   }
 
   pause(): void {
@@ -358,6 +373,8 @@ export class Meowquee {
 
       this.animationFrame = null;
     }
+
+    this.emit('pause');
   }
 
   destroy(): void {
@@ -366,6 +383,7 @@ export class Meowquee {
     }
 
     this.pause();
+    this.emit('destroy');
 
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
@@ -455,5 +473,13 @@ export class Meowquee {
 
   get currentDirection(): MeowqueeDirection {
     return this.direction;
+  }
+
+  on(event: MeowqueeEvent, handler: MeowqueeEventHandler): void {
+    this.eventHandlers[event].add(handler);
+  }
+
+  off(event: MeowqueeEvent, handler: MeowqueeEventHandler): void {
+    this.eventHandlers[event].delete(handler);
   }
 }

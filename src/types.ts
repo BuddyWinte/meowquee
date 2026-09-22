@@ -1,5 +1,9 @@
 export type MeowqueeDirection = 'left' | 'right';
 
+export type MeowqueeEvent = 'play' | 'pause' | 'destroy';
+
+export type MeowqueeEventHandler = () => void;
+
 export type MeowqueeAccessibility = 'decorative' | 'content';
 
 export interface MeowqueeConfig {
