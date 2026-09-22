@@ -35,14 +35,31 @@ pnpm install meowquee
 
 ### CDN
 
-Meowquee can also be loaded directly from a CDN:
+Meowquee can also be loaded directly from a CDN.
+
+#### ESM
 
 ```html
 <script type="module">
-  import Meowquee from "https://cdn.jsdelivr.net/npm/meowquee/dist/meowquee.mjs";
+  import { Meowquee } from "https://cdn.jsdelivr.net/npm/meowquee/dist/meowquee.mjs";
+
   const element = document.querySelector("#marquee");
+
   if (element) {
     const marquee = new Meowquee(element);
+  }
+</script>
+
+#### IIFE (not recommended)
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/meowquee/dist/meowquee.iife.min.js"></script>
+
+<script>
+  const element = document.querySelector("#marquee");
+
+  if (element) {
+    const marquee = new Meowquee.Meowquee(element);
   }
 </script>
 ```
