@@ -48,7 +48,6 @@ export function configureAccessibility(
 ): void {
   if (accessibility === 'decorative') {
     element.setAttribute('aria-hidden', 'true');
-    element.inert = true;
 
     return;
   }

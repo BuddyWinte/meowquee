@@ -110,15 +110,15 @@ export class Meowquee {
     );
 
     if (this.pauseOnHover) {
-      this.viewport.addEventListener('mouseenter', this.handleMouseEnter);
+      this.element.addEventListener('mouseenter', this.handleMouseEnter);
 
-      this.viewport.addEventListener('mouseleave', this.handleMouseLeave);
+      this.element.addEventListener('mouseleave', this.handleMouseLeave);
     }
 
     if (this.pauseOnFocus) {
-      this.viewport.addEventListener('focusin', this.handleFocusIn);
+      this.element.addEventListener('focusin', this.handleFocusIn);
 
-      this.viewport.addEventListener('focusout', this.handleFocusOut);
+      this.element.addEventListener('focusout', this.handleFocusOut);
     }
 
     this.setupReducedMotion();
@@ -377,18 +377,15 @@ export class Meowquee {
 
     this.reducedMotionQuery = null;
 
-    this.viewport.removeEventListener('mouseenter', this.handleMouseEnter);
+    this.element.removeEventListener('mouseenter', this.handleMouseEnter);
 
-    this.viewport.removeEventListener('mouseleave', this.handleMouseLeave);
+    this.element.removeEventListener('mouseleave', this.handleMouseLeave);
 
-    this.viewport.removeEventListener('focusin', this.handleFocusIn);
+    this.element.removeEventListener('focusin', this.handleFocusIn);
 
-    this.viewport.removeEventListener('focusout', this.handleFocusOut);
+    this.element.removeEventListener('focusout', this.handleFocusOut);
 
     this.clearRepeats();
-
-    this.element.removeAttribute('aria-hidden');
-    this.element.inert = false;
 
     restoreMeowqueeDOM(this.element, {
       viewport: this.viewport,
