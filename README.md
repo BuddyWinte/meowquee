@@ -18,7 +18,7 @@ A lightweight headless marquee engine for building pawesome scrolling content.
 - Pawesomely lightweight, dependency-free marquee engine
 - Typescript-first
 - Completely plug-and-play
-- Accessible by default (NOT FULLY, WE ARE STILL WORKING ON THIS BEFORE V1.0.0)
+- Accessible by default
 - Framework agnostic
 - Headless (no forced styles)
 
