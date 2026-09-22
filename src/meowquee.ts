@@ -396,6 +396,23 @@ export class Meowquee {
     this.destroyed = true;
   }
 
+  setGap(gap: string): void {
+    if (this.destroyed) {
+      return;
+    }
+
+    this.gap = gap;
+    this.track.style.gap = gap;
+  }
+
+  get currentGap(): string {
+    return this.gap;
+  }
+
+  get currentPosition(): number {
+    return this.position;
+  }
+
   refresh(): void {
     if (this.destroyed) {
       return;
