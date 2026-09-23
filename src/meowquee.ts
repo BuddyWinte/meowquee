@@ -407,10 +407,10 @@ export class Meowquee {
 
     this.reducedMotionQuery = null;
 
-    this.element.removeEventListener('mouseenter', this.handleMouseEnter);
-    this.element.removeEventListener('mouseleave', this.handleMouseLeave);
-    this.element.removeEventListener('focusin', this.handleFocusIn);
-    this.element.removeEventListener('focusout', this.handleFocusOut);
+    this.viewport.removeEventListener('mouseenter', this.handleMouseEnter);
+    this.viewport.removeEventListener('mouseleave', this.handleMouseLeave);
+    this.viewport.removeEventListener('focusin', this.handleFocusIn);
+    this.viewport.removeEventListener('focusout', this.handleFocusOut);
 
     this.clearRepeats();
 

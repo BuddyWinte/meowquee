@@ -1,255 +1,795 @@
 <!doctype html>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meowquee Edge Cases</title>
-    <style>
-    .test > span {
-        background-color: blue;
+
+
+<meta
+  name="description"
+  content="Interactive examples and edge cases for Meowquee, a headless marquee engine for the web."
+/>
+
+<title>Meowquee Examples</title>
+
+<style>
+  :root {
+    color-scheme: light;
+
+    --bg: #f5f9fc;
+    --surface: #ffffff;
+    --surface-soft: #edf5fa;
+    --border: #cbdce8;
+    --text: #172a3a;
+    --text-soft: #5c7180;
+    --accent: #3f7fa6;
+    --accent-soft: #dcecf5;
+    --code-bg: #172a3a;
+    --code-text: #e5f3fa;
+
+    font-family:
+      Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  a {
+    color: var(--accent);
+  }
+
+  code {
+    padding: 0.15em 0.4em;
+    border: 1px solid var(--border);
+    border-radius: 0.35rem;
+    background: var(--surface-soft);
+    font-family:
+      "Commit Mono", "SFMono-Regular", Consolas, "Liberation Mono",
+      monospace;
+    font-size: 0.9em;
+  }
+
+  header {
+    padding: 5rem 1.5rem 4rem;
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(
+        circle at 20% 20%,
+        rgba(114, 158, 184, 0.2),
+        transparent 35%
+      ),
+      var(--surface);
+  }
+
+  .header-inner,
+  main {
+    width: min(1100px, calc(100% - 2rem));
+    margin-inline: auto;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--accent);
+    font-family:
+      "Commit Mono", "SFMono-Regular", Consolas, monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+  }
+
+  .intro {
+    max-width: 680px;
+    margin: 1.5rem 0 0;
+    color: var(--text-soft);
+    font-size: 1.1rem;
+  }
+
+  .header-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .header-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .header-links a:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  main {
+    padding-block: 3rem 5rem;
+  }
+
+  .section-intro {
+    max-width: 700px;
+    margin-bottom: 2rem;
+  }
+
+  .section-intro h2 {
+    margin: 0;
+    font-size: 1.8rem;
+  }
+
+  .section-intro p {
+    margin: 0.5rem 0 0;
+    color: var(--text-soft);
+  }
+
+  .examples {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .example {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+    background: var(--surface);
+  }
+
+  .example-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.25rem 1rem;
+  }
+
+  .example-heading {
+    min-width: 0;
+  }
+
+  .example-number {
+    margin: 0 0 0.15rem;
+    color: var(--text-soft);
+    font-family:
+      "Commit Mono", "SFMono-Regular", Consolas, monospace;
+    font-size: 0.75rem;
+  }
+
+  .example h3 {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+
+  .description {
+    margin: 0.3rem 0 0;
+    color: var(--text-soft);
+    font-size: 0.9rem;
+  }
+
+  .tag {
+    flex: none;
+    align-self: flex-start;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface-soft);
+    color: var(--text-soft);
+    font-family:
+      "Commit Mono", "SFMono-Regular", Consolas, monospace;
+    font-size: 0.7rem;
+  }
+
+  .demo {
+    margin: 0 1.25rem 1.25rem;
+    border: 1px dashed var(--border);
+    border-radius: 0.6rem;
+    background: var(--surface-soft);
+  }
+
+  .demo-inner {
+    min-height: 4rem;
+    padding: 1.25rem;
+  }
+
+  .demo-label {
+    margin: 0 0 0.75rem;
+    color: var(--text-soft);
+    font-family:
+      "Commit Mono", "SFMono-Regular", Consolas, monospace;
+    font-size: 0.75rem;
+  }
+
+  .demo-content {
+    min-height: 2rem;
+    padding: 0.65rem 0;
+    white-space: nowrap;
+  }
+
+  .demo-content a {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .test > span {
+    padding: 0.2rem 0.45rem;
+    border-radius: 0.3rem;
+    background-color: #6b9fc0;
+    color: white;
+  }
+
+  .box-demo {
+    padding: 20px;
+    margin: 20px;
+    background: lightblue;
+  }
+
+  .spacing-demo span {
+    margin-right: 50px;
+  }
+
+  .spacing-demo span:nth-child(2) {
+    margin-right: 100px;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  button {
+    min-height: 2.4rem;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 0.45rem;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  button:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .direct-child-note {
+    margin: 0 1.25rem 1.25rem;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+  }
+
+  footer {
+    padding: 2rem 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-soft);
+    text-align: center;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 600px) {
+    header {
+      padding-block: 3.5rem 3rem;
     }
-    </style>
+
+    .example-header {
+      flex-direction: column;
+    }
+
+    .tag {
+      align-self: flex-start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+</style>
+
+
   </head>
 
   <body>
-    <main>
-      <h1>Meowquee</h1>
+    <header>
+      <div class="header-inner">
+        <p class="eyebrow">Meowquee</p>
 
-      <section>
-        <h2>1. Basic</h2>
 
-        <div id="basic" style="padding: 20px; background-color: red;">
-          <a href="#">One</a>
-          <a href="#">Two</a>
-          <a href="#">Three</a>
+    <h1>Examples</h1>
+
+    <p class="intro">
+      A collection of interactive examples showing what Meowquee can do,
+      including custom spacing, repeated content, different directions,
+      mutation handling, and DOM restoration.
+    </p>
+
+    <nav class="header-links" aria-label="Resources">
+      <a href="https://github.com/BuddyWinte/meowquee">GitHub</a>
+      <a href="#examples">Examples</a>
+    </nav>
+  </div>
+</header>
+
+<main id="examples">
+  <div class="section-intro">
+    <h2>Interactive examples</h2>
+    <p>
+      These examples intentionally use ordinary HTML and CSS. Meowquee
+      handles the movement without requiring a particular framework or
+      styling system.
+    </p>
+  </div>
+
+  <div class="examples">
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">01</p>
+          <h3>Basic marquee</h3>
+          <p class="description">
+            A simple repeating marquee with the default settings.
+          </p>
         </div>
-      </section>
+        <span class="tag">default</span>
+      </div>
 
-      <section>
-        <h2>2. Existing direct-child selector</h2>
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">gap: 1rem</p>
 
-        <div id="direct-children" class="test">
-          <span>One</span>
-          <span>Two</span>
-          <span>Three</span>
+          <div id="basic" class="demo-content">
+            <a href="#">One</a>
+            <a href="#">Two</a>
+            <a href="#">Three</a>
+          </div>
         </div>
+      </div>
+    </article>
 
-        <p>
-          This should match:
-          <code>.test &gt; span</code>
-        </p>
-      </section>
-
-      <section>
-        <h2>3. Padding, margin, and background</h2>
-
-        <div
-          id="box"
-          style="padding: 20px; margin: 20px; background: lightblue"
-        >
-          <strong>One</strong>
-          <strong>Two</strong>
-          <strong>Three</strong>
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">02</p>
+          <h3>Existing direct-child selectors</h3>
+          <p class="description">
+            User CSS continues to target the original element's children.
+          </p>
         </div>
-      </section>
+        <span class="tag">CSS</span>
+      </div>
 
-      <section>
-        <h2>4. Very short content</h2>
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">.test &gt; span</p>
 
-        <div id="short">
-          <span>Hi</span>
+          <div id="direct-children" class="test demo-content">
+            <span>One</span>
+            <span>Two</span>
+            <span>Three</span>
+          </div>
         </div>
-      </section>
+      </div>
+    </article>
 
-      <section>
-        <h2>5. Long content</h2>
-
-        <div id="long">
-          <span>
-            This is a fairly long piece of content that should take up more
-            space than the viewport.
-          </span>
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">03</p>
+          <h3>Padding, margin, and background</h3>
+          <p class="description">
+            Existing styles on the original element are preserved.
+          </p>
         </div>
-      </section>
+        <span class="tag">styles</span>
+      </div>
 
-      <section>
-        <h2>6. Different element types</h2>
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">custom box styling</p>
 
-        <div id="mixed">
-          <button type="button">Button</button>
-          <img
-            src="https://placehold.co/80x40"
-            alt="Placeholder"
-            width="80"
-            height="40"
-          />
-          <code>code</code>
-          <strong>bold</strong>
-          <a href="#">link</a>
+          <div id="box" class="box-demo">
+            <strong>One</strong>
+            <strong>Two</strong>
+            <strong>Three</strong>
+          </div>
         </div>
-      </section>
+      </div>
+    </article>
 
-      <section>
-        <h2>7. Custom spacing from user CSS</h2>
-
-        <div id="custom-spacing">
-          <span style="margin-right: 50px">One</span>
-          <span style="margin-right: 100px">Two</span>
-          <span>Three</span>
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">04</p>
+          <h3>Very short content</h3>
+          <p class="description">
+            Small content should still repeat correctly.
+          </p>
         </div>
-      </section>
+        <span class="tag">short</span>
+      </div>
 
-      <section>
-        <h2>8. Meowquee gap</h2>
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">one item</p>
 
-        <div id="gap">
-          <span>One</span>
-          <span>Two</span>
-          <span>Three</span>
+          <div id="short" class="demo-content">
+            <span>Hi</span>
+          </div>
         </div>
-      </section>
+      </div>
+    </article>
 
-      <section>
-        <h2>9. No repeat</h2>
-
-        <div id="no-repeat">
-          <span>One</span>
-          <span>Two</span>
-          <span>Three</span>
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">05</p>
+          <h3>Long content</h3>
+          <p class="description">
+            Content wider than the available demo area.
+          </p>
         </div>
-      </section>
+        <span class="tag">long</span>
+      </div>
 
-      <section>
-        <h2>10. Right direction</h2>
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">overflowing content</p>
 
-        <div id="right">
-          <span>One</span>
-          <span>Two</span>
-          <span>Three</span>
+          <div id="long" class="demo-content">
+            <span>
+              This is a fairly long piece of content that should take up
+              more space than the viewport.
+            </span>
+          </div>
         </div>
-      </section>
+      </div>
+    </article>
 
-      <section>
-        <h2>11. Speed zero</h2>
-
-        <div id="stopped">
-          <span>One</span>
-          <span>Two</span>
-          <span>Three</span>
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">06</p>
+          <h3>Different element types</h3>
+          <p class="description">
+            Buttons, images, code, text, and links can live together.
+          </p>
         </div>
-      </section>
+        <span class="tag">HTML</span>
+      </div>
 
-      <section>
-        <h2>12. Mutation observer</h2>
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">mixed content</p>
 
-        <div id="mutation">
-          <span>Initial</span>
+          <div id="mixed" class="demo-content">
+            <button type="button">Button</button>
+            <img
+              src="https://placehold.co/80x40"
+              alt="Placeholder"
+              width="80"
+              height="40"
+            />
+            <code>code</code>
+            <strong>bold</strong>
+            <a href="#">link</a>
+          </div>
         </div>
+      </div>
+    </article>
 
-        <button id="add">Add item</button>
-        <button id="remove">Remove item</button>
-      </section>
-
-      <section>
-        <h2>13. Destroy and restore</h2>
-
-        <div id="destroy-test">
-          <a href="#">One</a>
-          <a href="#">Two</a>
-          <a href="#">Three</a>
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">07</p>
+          <h3>Custom spacing</h3>
+          <p class="description">
+            Spacing from the user's own CSS remains intact.
+          </p>
         </div>
+        <span class="tag">CSS</span>
+      </div>
 
-        <button id="destroy">Destroy</button>
-      </section>
-    </main>
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">custom margins</p>
 
-    <script type="module">
-      import { Meowquee } from './dist/meowquee.mjs';
+          <div id="custom-spacing" class="spacing-demo demo-content">
+            <span>One</span>
+            <span>Two</span>
+            <span>Three</span>
+          </div>
+        </div>
+      </div>
+    </article>
 
-      const marquees = [];
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">08</p>
+          <h3>Meowquee gap</h3>
+          <p class="description">
+            The library can add spacing between repeated units.
+          </p>
+        </div>
+        <span class="tag">gap: 2rem</span>
+      </div>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#basic'), {
-          gap: '1rem',
-        }),
-      );
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">library-controlled spacing</p>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#direct-children')),
-      );
+          <div id="gap" class="demo-content">
+            <span>One</span>
+            <span>Two</span>
+            <span>Three</span>
+          </div>
+        </div>
+      </div>
+    </article>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#box')),
-      );
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">09</p>
+          <h3>No repeat</h3>
+          <p class="description">
+            Marquee movement can be used without repeating the content.
+          </p>
+        </div>
+        <span class="tag">repeat: false</span>
+      </div>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#short')),
-      );
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">single pass</p>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#long')),
-      );
+          <div id="no-repeat" class="demo-content">
+            <span>One</span>
+            <span>Two</span>
+            <span>Three</span>
+          </div>
+        </div>
+      </div>
+    </article>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#mixed')),
-      );
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">10</p>
+          <h3>Right direction</h3>
+          <p class="description">
+            The same marquee can move in the opposite direction.
+          </p>
+        </div>
+        <span class="tag">direction: right</span>
+      </div>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#custom-spacing')),
-      );
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">right-to-left reversed</p>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#gap'), {
-          gap: '2rem',
-        }),
-      );
+          <div id="right" class="demo-content">
+            <span>One</span>
+            <span>Two</span>
+            <span>Three</span>
+          </div>
+        </div>
+      </div>
+    </article>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#no-repeat'), {
-          repeat: false,
-        }),
-      );
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">11</p>
+          <h3>Speed zero</h3>
+          <p class="description">
+            A marquee can be initialized without movement.
+          </p>
+        </div>
+        <span class="tag">speed: 0</span>
+      </div>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#right'), {
-          direction: 'right',
-        }),
-      );
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">stationary</p>
 
-      marquees.push(
-        new Meowquee(document.querySelector('#stopped'), {
-          speed: 0,
-        }),
-      );
+          <div id="stopped" class="demo-content">
+            <span>One</span>
+            <span>Two</span>
+            <span>Three</span>
+          </div>
+        </div>
+      </div>
+    </article>
 
-      const mutation = new Meowquee(
-        document.querySelector('#mutation'),
-      );
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">12</p>
+          <h3>Mutation observer</h3>
+          <p class="description">
+            Content changes are detected automatically.
+          </p>
+        </div>
+        <span class="tag">dynamic</span>
+      </div>
 
-      document.querySelector('#add').addEventListener('click', () => {
-        const item = document.createElement('span');
-        item.textContent = ` Added ${Date.now()}`;
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">try changing the content</p>
 
-        mutation.element.appendChild(item);
-      });
+          <div id="mutation" class="demo-content">
+            <span>Initial</span>
+          </div>
 
-      document.querySelector('#remove').addEventListener('click', () => {
-        const item = mutation.element.lastElementChild;
+          <div class="controls">
+            <button id="add" type="button">Add item</button>
+            <button id="remove" type="button">Remove item</button>
+          </div>
+        </div>
+      </div>
+    </article>
 
-        if (item) {
-          item.remove();
-        }
-      });
+    <article class="example">
+      <div class="example-header">
+        <div class="example-heading">
+          <p class="example-number">13</p>
+          <h3>Destroy and restore</h3>
+          <p class="description">
+            Destroying an instance removes Meowquee's generated DOM.
+          </p>
+        </div>
+        <span class="tag">destroy()</span>
+      </div>
 
-      const destroyTest = new Meowquee(
-        document.querySelector('#destroy-test'),
-      );
+      <div class="demo">
+        <div class="demo-inner">
+          <p class="demo-label">destroy the instance</p>
 
-      document.querySelector('#destroy').addEventListener('click', () => {
-        destroyTest.destroy();
-      });
+          <div id="destroy-test" class="demo-content">
+            <a href="#">One</a>
+            <a href="#">Two</a>
+            <a href="#">Three</a>
+          </div>
 
-      window.marquees = marquees;
-    </script>
+          <div class="controls">
+            <button id="destroy" type="button">
+              Destroy Meowquee
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</main>
+
+<footer>
+  Meowquee · Headless marquee engine
+</footer>
+
+<script type="module">
+  import { Meowquee } from './dist/meowquee.mjs';
+
+  const marquees = [];
+
+  marquees.push(
+    new Meowquee(document.querySelector('#basic'), {
+      gap: '1rem',
+    }),
+  );
+
+  marquees.push(
+    new Meowquee(document.querySelector('#direct-children')),
+  );
+
+  marquees.push(
+    new Meowquee(document.querySelector('#box')),
+  );
+
+  marquees.push(
+    new Meowquee(document.querySelector('#short')),
+  );
+
+  marquees.push(
+    new Meowquee(document.querySelector('#long')),
+  );
+
+  marquees.push(
+    new Meowquee(document.querySelector('#mixed')),
+  );
+
+  marquees.push(
+    new Meowquee(document.querySelector('#custom-spacing')),
+  );
+
+  marquees.push(
+    new Meowquee(document.querySelector('#gap'), {
+      gap: '2rem',
+    }),
+  );
+
+  marquees.push(
+    new Meowquee(document.querySelector('#no-repeat'), {
+      repeat: false,
+    }),
+  );
+
+  marquees.push(
+    new Meowquee(document.querySelector('#right'), {
+      direction: 'right',
+    }),
+  );
+
+  marquees.push(
+    new Meowquee(document.querySelector('#stopped'), {
+      speed: 0,
+    }),
+  );
+
+  const mutation = new Meowquee(
+    document.querySelector('#mutation'),
+  );
+
+  document.querySelector('#add').addEventListener('click', () => {
+    const item = document.createElement('span');
+    item.textContent = `Added ${Date.now()}`;
+
+    mutation.element.appendChild(item);
+  });
+
+  document.querySelector('#remove').addEventListener('click', () => {
+    const item = mutation.element.lastElementChild;
+
+    if (item) {
+      item.remove();
+    }
+  });
+
+  const destroyTest = new Meowquee(
+    document.querySelector('#destroy-test'),
+  );
+
+  document.querySelector('#destroy').addEventListener('click', () => {
+    destroyTest.destroy();
+  });
+
+  window.marquees = marquees;
+</script>
+
   </body>
 </html>
