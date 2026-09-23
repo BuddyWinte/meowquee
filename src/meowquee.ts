@@ -6,14 +6,19 @@ import {
   restoreMeowqueeDOM,
   type MeowqueeDOM,
 } from './dom';
-import type { MeowqueeAccessibility, MeowqueeConfig, MeowqueeDirection, MeowqueeEvent, MeowqueeEventHandler } from './types';
+import type {
+  MeowqueeAccessibility,
+  MeowqueeConfig,
+  MeowqueeDirection,
+  MeowqueeEvent,
+  MeowqueeEventHandler,
+} from './types';
 
 export class Meowquee {
   readonly element: HTMLElement;
 
   private readonly viewport: HTMLDivElement;
   private readonly track: HTMLDivElement;
-  private readonly content: HTMLDivElement;
 
   private speed: number;
   private direction: MeowqueeDirection;
@@ -32,7 +37,7 @@ export class Meowquee {
   private repeatWidth = 0;
   private viewportWidth = 0;
 
-  private readonly repeatNodes: HTMLDivElement[] = [];
+  private readonly repeatNodes: HTMLElement[] = [];
 
   private position = 0;
 
@@ -72,7 +77,6 @@ export class Meowquee {
 
     this.viewport = dom.viewport;
     this.track = dom.track;
-    this.content = dom.content;
 
     this.initialize();
   }
@@ -103,7 +107,6 @@ export class Meowquee {
       {
         viewport: this.viewport,
         track: this.track,
-        content: this.content,
       },
       this.accessibility,
       this.ariaLabel,
@@ -111,13 +114,11 @@ export class Meowquee {
 
     if (this.pauseOnHover) {
       this.element.addEventListener('mouseenter', this.handleMouseEnter);
-
       this.element.addEventListener('mouseleave', this.handleMouseLeave);
     }
 
     if (this.pauseOnFocus) {
       this.element.addEventListener('focusin', this.handleFocusIn);
-
       this.element.addEventListener('focusout', this.handleFocusOut);
     }
 
@@ -167,7 +168,7 @@ export class Meowquee {
       this.updateDimensions();
     });
 
-    this.mutationObserver.observe(this.content, {
+    this.mutationObserver.observe(this.element, {
       childList: true,
       subtree: true,
       characterData: true,
@@ -184,7 +185,7 @@ export class Meowquee {
     const copiesNeeded = Math.ceil(this.viewportWidth / this.repeatWidth) + 1;
 
     for (let copy = 0; copy < copiesNeeded; copy++) {
-      const clone = createRepeat(this.content);
+      const clone = createRepeat(this.element);
 
       this.track.appendChild(clone);
       this.repeatNodes.push(clone);
@@ -222,7 +223,6 @@ export class Meowquee {
 
   private handleFocusOut = (): void => {
     this.focused = this.viewport.contains(document.activeElement);
-
     this.updatePlaybackState();
   };
 
@@ -269,14 +269,27 @@ export class Meowquee {
 
     this.clearRepeats();
 
-    this.contentWidth = this.content.getBoundingClientRect().width;
+    this.contentWidth = this.element.getBoundingClientRect().width;
 
-    this.repeatWidth = this.contentWidth + this.getGapWidth();
+    if (this.repeat) {
+      const measurementRepeat = createRepeat(this.element);
+
+      this.track.appendChild(measurementRepeat);
+
+      const originalRect = this.element.getBoundingClientRect();
+      const repeatRect = measurementRepeat.getBoundingClientRect();
+
+      this.repeatWidth = repeatRect.left - originalRect.left;
+
+      measurementRepeat.remove();
+    } else {
+      this.repeatWidth = 0;
+    }
 
     this.buildRepeats();
 
     if (previousRepeatWidth > 0 && this.repeatWidth > 0 && this.repeat) {
-      this.position = this.position % this.repeatWidth;
+      this.position %= this.repeatWidth;
 
       if (this.position > 0) {
         this.position -= this.repeatWidth;
@@ -308,7 +321,7 @@ export class Meowquee {
     play: new Set(),
     pause: new Set(),
     destroy: new Set(),
-    }
+  };
 
   private emit(event: MeowqueeEvent): void {
     for (const handler of this.eventHandlers[event]) {
@@ -327,7 +340,6 @@ export class Meowquee {
 
     if (previousTimestamp === null) {
       this.animationFrame = window.requestAnimationFrame(this.tick);
-
       return;
     }
 
@@ -371,7 +383,6 @@ export class Meowquee {
 
     if (this.animationFrame !== null) {
       window.cancelAnimationFrame(this.animationFrame);
-
       this.animationFrame = null;
     }
 
@@ -397,11 +408,8 @@ export class Meowquee {
     this.reducedMotionQuery = null;
 
     this.element.removeEventListener('mouseenter', this.handleMouseEnter);
-
     this.element.removeEventListener('mouseleave', this.handleMouseLeave);
-
     this.element.removeEventListener('focusin', this.handleFocusIn);
-
     this.element.removeEventListener('focusout', this.handleFocusOut);
 
     this.clearRepeats();
@@ -409,7 +417,6 @@ export class Meowquee {
     restoreMeowqueeDOM(this.element, {
       viewport: this.viewport,
       track: this.track,
-      content: this.content,
     });
 
     this.destroyed = true;
@@ -420,8 +427,14 @@ export class Meowquee {
       return;
     }
 
+    if (typeof gap !== 'string') {
+      throw new TypeError('Meowquee gap must be a CSS length string.');
+    }
+
     this.gap = gap;
     this.track.style.gap = gap;
+
+    this.updateDimensions();
   }
 
   get currentGap(): string {

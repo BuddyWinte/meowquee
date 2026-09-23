@@ -1,42 +1,28 @@
 export interface MeowqueeDOM {
   viewport: HTMLDivElement;
   track: HTMLDivElement;
-  content: HTMLDivElement;
 }
 
 export function createMeowqueeDOM(element: HTMLElement): MeowqueeDOM {
   const viewport = document.createElement('div');
-  const track = document.createElement('div');
-  const content = document.createElement('div');
-
   viewport.dataset.meowquee = 'viewport';
-  track.dataset.meowquee = 'track';
-  content.dataset.meowquee = 'content';
-
   viewport.style.width = '100%';
   viewport.style.overflow = 'hidden';
 
-  track.style.width = 'max-content';
+  const track = document.createElement('div');
+  track.dataset.meowquee = 'track';
   track.style.display = 'flex';
   track.style.flexWrap = 'nowrap';
+  track.style.width = 'max-content';
   track.style.willChange = 'transform';
 
-  content.style.display = 'flex';
-  content.style.flexShrink = '0';
-  content.style.width = 'max-content';
-
-  while (element.firstChild) {
-    content.appendChild(element.firstChild);
-  }
-
-  track.appendChild(content);
+  element.parentNode?.insertBefore(viewport, element);
   viewport.appendChild(track);
-  element.appendChild(viewport);
+  track.appendChild(element);
 
   return {
     viewport,
     track,
-    content,
   };
 }
 
@@ -63,26 +49,21 @@ export function configureAccessibility(
   dom.viewport.inert = false;
 }
 
-export function createRepeat(content: HTMLDivElement): HTMLDivElement {
-  const clone = content.cloneNode(true) as HTMLDivElement;
+export function createRepeat(element: HTMLElement): HTMLElement {
+  const repeat = element.cloneNode(true) as HTMLElement;
 
-  clone.dataset.meowqueeRepeat = 'true';
-  clone.setAttribute('aria-hidden', 'true');
-  clone.inert = true;
+  repeat.removeAttribute('id');
+  repeat.removeAttribute('data-meowquee');
+  repeat.dataset.meowqueeRepeat = 'true';
 
-  return clone;
+  repeat.setAttribute('aria-hidden', 'true');
+  repeat.inert = true;
+
+  return repeat;
 }
 
 export function restoreMeowqueeDOM(element: HTMLElement, dom: MeowqueeDOM): void {
-  const clones = dom.track.querySelectorAll('[data-meowquee-repeat]');
+  dom.track.querySelectorAll('[data-meowquee-repeat]').forEach((clone) => clone.remove());
 
-  clones.forEach((clone) => {
-    clone.remove();
-  });
-
-  while (dom.content.firstChild) {
-    element.appendChild(dom.content.firstChild);
-  }
-
-  dom.viewport.remove();
+  dom.track.replaceWith(element);
 }

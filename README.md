@@ -8,11 +8,6 @@
 
 A lightweight headless marquee engine for building pawesome scrolling content.
 
-> [!WARNING]
-> **Known CSS limitation**: Meowquee currently adds internal `<div>` wrappers around the marquee content. Because of this, CSS selectors that rely on the marquee element being the direct parent of its children, such as `.marquee > a`, will not work as expected.
->
-> We are actively working on improving how Meowquee handles the DOM so existing CSS selectors can be preserved. Thanks for the patience!
-
 ## Features
 
 - Pawesomely lightweight, dependency-free marquee engine
@@ -51,7 +46,8 @@ Meowquee can also be loaded directly from a CDN.
 </script>
 ```
 
-#### IIFE (not recommended) 
+#### IIFE (not recommended)
+
 ```html
 <script src="https://cdn.jsdelivr.net/npm/meowquee/dist/meowquee.iife.min.js"></script>
 
