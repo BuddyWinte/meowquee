@@ -1,18 +1,18 @@
-import { getStartPosition, updatePosition } from './animation';
+import { getStartPosition, updatePosition } from "./animation";
 import {
   configureAccessibility,
   createMeowqueeDOM,
   createRepeat,
   restoreMeowqueeDOM,
   type MeowqueeDOM,
-} from './dom';
+} from "./dom";
 import type {
   MeowqueeAccessibility,
   MeowqueeConfig,
   MeowqueeDirection,
   MeowqueeEvent,
   MeowqueeEventHandler,
-} from './types';
+} from "./types";
 
 export class Meowquee {
   readonly element: HTMLElement;
@@ -59,14 +59,14 @@ export class Meowquee {
     this.element = element;
 
     this.speed = config.speed ?? 50;
-    this.direction = config.direction ?? 'left';
+    this.direction = config.direction ?? "left";
     this.pauseOnHover = config.pauseOnHover ?? true;
     this.pauseOnFocus = config.pauseOnFocus ?? true;
     this.respectReducedMotion = config.respectReducedMotion ?? true;
     this.autoplay = config.autoplay ?? true;
     this.repeat = config.repeat ?? true;
-    this.gap = config.gap ?? '0px';
-    this.accessibility = config.accessibility ?? 'decorative';
+    this.gap = config.gap ?? "0px";
+    this.accessibility = config.accessibility ?? "decorative";
     this.ariaLabel = config.ariaLabel;
     this.observeResize = config.observeResize ?? true;
     this.observeMutations = config.observeMutations ?? true;
@@ -83,19 +83,19 @@ export class Meowquee {
 
   private validateConfiguration(): void {
     if (!Number.isFinite(this.speed) || this.speed < 0) {
-      throw new TypeError('Meowquee speed must be a non-negative number.');
+      throw new TypeError("Meowquee speed must be a non-negative number.");
     }
 
-    if (this.direction !== 'left' && this.direction !== 'right') {
+    if (this.direction !== "left" && this.direction !== "right") {
       throw new TypeError('Meowquee direction must be either "left" or "right".');
     }
 
-    if (this.accessibility !== 'decorative' && this.accessibility !== 'content') {
+    if (this.accessibility !== "decorative" && this.accessibility !== "content") {
       throw new TypeError('Meowquee accessibility must be either "decorative" or "content".');
     }
 
-    if (typeof this.gap !== 'string') {
-      throw new TypeError('Meowquee gap must be a CSS length string.');
+    if (typeof this.gap !== "string") {
+      throw new TypeError("Meowquee gap must be a CSS length string.");
     }
   }
 
@@ -113,13 +113,13 @@ export class Meowquee {
     );
 
     if (this.pauseOnHover) {
-      this.element.addEventListener('mouseenter', this.handleMouseEnter);
-      this.element.addEventListener('mouseleave', this.handleMouseLeave);
+      this.element.addEventListener("mouseenter", this.handleMouseEnter);
+      this.element.addEventListener("mouseleave", this.handleMouseLeave);
     }
 
     if (this.pauseOnFocus) {
-      this.element.addEventListener('focusin', this.handleFocusIn);
-      this.element.addEventListener('focusout', this.handleFocusOut);
+      this.element.addEventListener("focusin", this.handleFocusIn);
+      this.element.addEventListener("focusout", this.handleFocusOut);
     }
 
     this.setupReducedMotion();
@@ -139,15 +139,15 @@ export class Meowquee {
       return;
     }
 
-    this.reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    this.reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     this.reducedMotion = this.reducedMotionQuery.matches;
 
-    this.reducedMotionQuery.addEventListener('change', this.handleReducedMotionChange);
+    this.reducedMotionQuery.addEventListener("change", this.handleReducedMotionChange);
   }
 
   private setupResizeObserver(): void {
-    if (!this.observeResize || typeof ResizeObserver === 'undefined') {
+    if (!this.observeResize || typeof ResizeObserver === "undefined") {
       return;
     }
 
@@ -160,7 +160,7 @@ export class Meowquee {
   }
 
   private setupMutationObserver(): void {
-    if (!this.observeMutations || typeof MutationObserver === 'undefined') {
+    if (!this.observeMutations || typeof MutationObserver === "undefined") {
       return;
     }
 
@@ -270,7 +270,21 @@ export class Meowquee {
     this.clearRepeats();
 
     this.contentWidth = this.element.getBoundingClientRect().width;
-    this.repeatWidth = this.contentWidth + this.getGapWidth();
+
+    if (this.repeat) {
+      const measurementRepeat = createRepeat(this.element);
+
+      this.track.appendChild(measurementRepeat);
+
+      const originalRect = this.element.getBoundingClientRect();
+      const repeatRect = measurementRepeat.getBoundingClientRect();
+
+      this.repeatWidth = repeatRect.left - originalRect.left;
+
+      measurementRepeat.remove();
+    } else {
+      this.repeatWidth = 0;
+    }
 
     this.buildRepeats();
 
@@ -356,7 +370,7 @@ export class Meowquee {
     this.lastTimestamp = null;
 
     this.animationFrame = window.requestAnimationFrame(this.tick);
-    this.emit('play');
+    this.emit("play");
   }
 
   pause(): void {
@@ -372,7 +386,7 @@ export class Meowquee {
       this.animationFrame = null;
     }
 
-    this.emit('pause');
+    this.emit("pause");
   }
 
   destroy(): void {
@@ -381,7 +395,7 @@ export class Meowquee {
     }
 
     this.pause();
-    this.emit('destroy');
+    this.emit("destroy");
 
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
@@ -389,14 +403,14 @@ export class Meowquee {
     this.mutationObserver?.disconnect();
     this.mutationObserver = null;
 
-    this.reducedMotionQuery?.removeEventListener('change', this.handleReducedMotionChange);
+    this.reducedMotionQuery?.removeEventListener("change", this.handleReducedMotionChange);
 
     this.reducedMotionQuery = null;
 
-    this.element.removeEventListener('mouseenter', this.handleMouseEnter);
-    this.element.removeEventListener('mouseleave', this.handleMouseLeave);
-    this.element.removeEventListener('focusin', this.handleFocusIn);
-    this.element.removeEventListener('focusout', this.handleFocusOut);
+    this.element.removeEventListener("mouseenter", this.handleMouseEnter);
+    this.element.removeEventListener("mouseleave", this.handleMouseLeave);
+    this.element.removeEventListener("focusin", this.handleFocusIn);
+    this.element.removeEventListener("focusout", this.handleFocusOut);
 
     this.clearRepeats();
 
@@ -413,8 +427,8 @@ export class Meowquee {
       return;
     }
 
-    if (typeof gap !== 'string') {
-      throw new TypeError('Meowquee gap must be a CSS length string.');
+    if (typeof gap !== "string") {
+      throw new TypeError("Meowquee gap must be a CSS length string.");
     }
 
     this.gap = gap;
@@ -441,14 +455,14 @@ export class Meowquee {
 
   setSpeed(speed: number): void {
     if (!Number.isFinite(speed) || speed < 0) {
-      throw new TypeError('Meowquee speed must be a non-negative number.');
+      throw new TypeError("Meowquee speed must be a non-negative number.");
     }
 
     this.speed = speed;
   }
 
   setDirection(direction: MeowqueeDirection): void {
-    if (direction !== 'left' && direction !== 'right') {
+    if (direction !== "left" && direction !== "right") {
       throw new TypeError('Meowquee direction must be either "left" or "right".');
     }
 
