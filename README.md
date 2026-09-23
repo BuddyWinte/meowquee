@@ -51,7 +51,8 @@ Meowquee can also be loaded directly from a CDN.
 </script>
 ```
 
-#### IIFE (not recommended) 
+#### IIFE (not recommended)
+
 ```html
 <script src="https://cdn.jsdelivr.net/npm/meowquee/dist/meowquee.iife.min.js"></script>
 

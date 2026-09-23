@@ -3,105 +3,251 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meowquee Stress Test</title>
-
+    <title>Meowquee Edge Cases</title>
     <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        padding: 2rem;
-        min-height: 100vh;
-        font-family: sans-serif;
-        background: #111;
-        color: #fff;
-      }
-
-      h1 {
-        margin-top: 0;
-      }
-
-      .tests {
-        display: grid;
-        gap: 1rem;
-        max-width: 900px;
-        margin: 0 auto;
-      }
-
-      .test {
-        position: relative;
-      }
-
-      .label {
-        display: block;
-        margin-bottom: 0.35rem;
-        font-size: 0.8rem;
-        opacity: 0.7;
-      }
-
-      .marquee {
-        width: 400px;
-        max-width: 100%;
-        overflow: hidden;
-        white-space: nowrap;
-        border: 2px solid #555;
-        padding: 1rem;
-        background: #222;
-      }
-
-      .marquee p {
-        margin: 0;
-        white-space: nowrap;
-      }
-
-      .marquee img {
-        display: inline-block;
-        vertical-align: middle;
-      }
+    .test > span {
+        background-color: blue;
+    }
     </style>
   </head>
 
   <body>
-    <h1>Meowquee Test Suite thing</h1>
-    <p>meow</p>
+    <main>
+      <h1>Meowquee</h1>
 
-    <div class="tests">
-      <div class="test">
-        <div class="marquee meowquee">
-          <p>this text moves forever</p><p style="margin-left: 1rem;">|</p>
-        </div>
-      </div>
+      <section>
+        <h2>1. Basic</h2>
 
-      <div class="test">
-        <div class="marquee meowquee">
-          <p>
-            <img src="https://placehold.co/250x100" width="250" height="100" alt="IMG" />
-          </p>
+        <div id="basic" style="padding: 20px; background-color: red;">
+          <a href="#">One</a>
+          <a href="#">Two</a>
+          <a href="#">Three</a>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <section>
+        <h2>2. Existing direct-child selector</h2>
+
+        <div id="direct-children" class="test">
+          <span>One</span>
+          <span>Two</span>
+          <span>Three</span>
+        </div>
+
+        <p>
+          This should match:
+          <code>.test &gt; span</code>
+        </p>
+      </section>
+
+      <section>
+        <h2>3. Padding, margin, and background</h2>
+
+        <div
+          id="box"
+          style="padding: 20px; margin: 20px; background: lightblue"
+        >
+          <strong>One</strong>
+          <strong>Two</strong>
+          <strong>Three</strong>
+        </div>
+      </section>
+
+      <section>
+        <h2>4. Very short content</h2>
+
+        <div id="short">
+          <span>Hi</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>5. Long content</h2>
+
+        <div id="long">
+          <span>
+            This is a fairly long piece of content that should take up more
+            space than the viewport.
+          </span>
+        </div>
+      </section>
+
+      <section>
+        <h2>6. Different element types</h2>
+
+        <div id="mixed">
+          <button type="button">Button</button>
+          <img
+            src="https://placehold.co/80x40"
+            alt="Placeholder"
+            width="80"
+            height="40"
+          />
+          <code>code</code>
+          <strong>bold</strong>
+          <a href="#">link</a>
+        </div>
+      </section>
+
+      <section>
+        <h2>7. Custom spacing from user CSS</h2>
+
+        <div id="custom-spacing">
+          <span style="margin-right: 50px">One</span>
+          <span style="margin-right: 100px">Two</span>
+          <span>Three</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>8. Meowquee gap</h2>
+
+        <div id="gap">
+          <span>One</span>
+          <span>Two</span>
+          <span>Three</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>9. No repeat</h2>
+
+        <div id="no-repeat">
+          <span>One</span>
+          <span>Two</span>
+          <span>Three</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>10. Right direction</h2>
+
+        <div id="right">
+          <span>One</span>
+          <span>Two</span>
+          <span>Three</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>11. Speed zero</h2>
+
+        <div id="stopped">
+          <span>One</span>
+          <span>Two</span>
+          <span>Three</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>12. Mutation observer</h2>
+
+        <div id="mutation">
+          <span>Initial</span>
+        </div>
+
+        <button id="add">Add item</button>
+        <button id="remove">Remove item</button>
+      </section>
+
+      <section>
+        <h2>13. Destroy and restore</h2>
+
+        <div id="destroy-test">
+          <a href="#">One</a>
+          <a href="#">Two</a>
+          <a href="#">Three</a>
+        </div>
+
+        <button id="destroy">Destroy</button>
+      </section>
+    </main>
 
     <script type="module">
-      import meowquee from './dist/meowquee.mjs';
+      //import { Meowquee } from './dist/meowquee.mjs';
+      import { Meowquee } from 'https://cdn.jsdelivr.net/npm/meowquee/dist/meowquee.mjs';
 
       const marquees = [];
 
-      document.querySelectorAll('.meowquee').forEach((element, index) => {
-        try {
-          const marquee = meowquee(element, {
-            speed: 70,
-            direction: 'left',
-            gap: "1rem",
-          });
+      marquees.push(
+        new Meowquee(document.querySelector('#basic'), {
+          gap: '1rem',
+        }),
+      );
 
-          marquees.push(marquee);
+      marquees.push(
+        new Meowquee(document.querySelector('#direct-children')),
+      );
 
-          console.log(`[Meowquee] Test ${String(index + 1).padStart(2, '0')} initialized`, marquee);
-        } catch (error) {
-          console.error(`[Meowquee] Test ${String(index + 1).padStart(2, '0')} FAILED`, error);
+      marquees.push(
+        new Meowquee(document.querySelector('#box')),
+      );
+
+      marquees.push(
+        new Meowquee(document.querySelector('#short')),
+      );
+
+      marquees.push(
+        new Meowquee(document.querySelector('#long')),
+      );
+
+      marquees.push(
+        new Meowquee(document.querySelector('#mixed')),
+      );
+
+      marquees.push(
+        new Meowquee(document.querySelector('#custom-spacing')),
+      );
+
+      marquees.push(
+        new Meowquee(document.querySelector('#gap'), {
+          gap: '2rem',
+        }),
+      );
+
+      marquees.push(
+        new Meowquee(document.querySelector('#no-repeat'), {
+          repeat: false,
+        }),
+      );
+
+      marquees.push(
+        new Meowquee(document.querySelector('#right'), {
+          direction: 'right',
+        }),
+      );
+
+      marquees.push(
+        new Meowquee(document.querySelector('#stopped'), {
+          speed: 0,
+        }),
+      );
+
+      const mutation = new Meowquee(
+        document.querySelector('#mutation'),
+      );
+
+      document.querySelector('#add').addEventListener('click', () => {
+        const item = document.createElement('span');
+        item.textContent = ` Added ${Date.now()}`;
+
+        mutation.element.appendChild(item);
+      });
+
+      document.querySelector('#remove').addEventListener('click', () => {
+        const item = mutation.element.lastElementChild;
+
+        if (item) {
+          item.remove();
         }
+      });
+
+      const destroyTest = new Meowquee(
+        document.querySelector('#destroy-test'),
+      );
+
+      document.querySelector('#destroy').addEventListener('click', () => {
+        destroyTest.destroy();
       });
 
       window.marquees = marquees;
