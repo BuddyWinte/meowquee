@@ -113,13 +113,13 @@ export class Meowquee {
     );
 
     if (this.pauseOnHover) {
-      this.element.addEventListener('mouseenter', this.handleMouseEnter);
-      this.element.addEventListener('mouseleave', this.handleMouseLeave);
+      this.viewport.addEventListener('mouseenter', this.handleMouseEnter);
+      this.viewport.addEventListener('mouseleave', this.handleMouseLeave);
     }
 
     if (this.pauseOnFocus) {
-      this.element.addEventListener('focusin', this.handleFocusIn);
-      this.element.addEventListener('focusout', this.handleFocusOut);
+      this.viewport.addEventListener('focusin', this.handleFocusIn);
+      this.viewport.addEventListener('focusout', this.handleFocusOut);
     }
 
     this.setupReducedMotion();
