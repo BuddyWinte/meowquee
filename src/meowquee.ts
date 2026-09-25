@@ -3,6 +3,7 @@ import {
   configureAccessibility,
   createMeowqueeDOM,
   createRepeat,
+  restoreAccessibility,
   restoreMeowqueeDOM,
   type MeowqueeDOM,
 } from './dom';
@@ -413,6 +414,8 @@ export class Meowquee {
     this.viewport.removeEventListener('focusout', this.handleFocusOut);
 
     this.clearRepeats();
+
+    restoreAccessibility(this.element, this.accessibility, this.ariaLabel);
 
     restoreMeowqueeDOM(this.element, {
       viewport: this.viewport,
