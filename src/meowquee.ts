@@ -25,7 +25,7 @@ export class Meowquee {
   private pauseOnHover: boolean;
   private pauseOnFocus: boolean;
   private respectReducedMotion: boolean;
-  private autoplay: boolean;
+  private shouldPlay: boolean;
   private repeat: boolean;
   private gap: string;
   private accessibility: MeowqueeAccessibility;
@@ -63,7 +63,7 @@ export class Meowquee {
     this.pauseOnHover = config.pauseOnHover ?? true;
     this.pauseOnFocus = config.pauseOnFocus ?? true;
     this.respectReducedMotion = config.respectReducedMotion ?? true;
-    this.autoplay = config.autoplay ?? true;
+    this.shouldPlay = config.autoplay ?? true;
     this.repeat = config.repeat ?? true;
     this.gap = config.gap ?? '0px';
     this.accessibility = config.accessibility ?? 'decorative';
@@ -129,7 +129,7 @@ export class Meowquee {
     this.updateDimensions();
     this.resetPosition();
 
-    if (this.autoplay && !this.shouldPause()) {
+    if (this.shouldPlay) {
       this.play();
     }
   }
@@ -249,11 +249,12 @@ export class Meowquee {
 
   private updatePlaybackState(): void {
     if (this.shouldPause()) {
-      this.pause();
+      this.suspend();
+
       return;
     }
 
-    if (this.autoplay) {
+    if (this.shouldPlay) {
       this.play();
     }
   }
@@ -362,7 +363,13 @@ export class Meowquee {
   };
 
   play(): void {
-    if (this.destroyed || this.playing || this.shouldPause()) {
+    if (this.destroyed) {
+      return;
+    }
+
+    this.shouldPlay = true;
+
+    if (this.playing || this.shouldPause()) {
       return;
     }
 
@@ -374,6 +381,13 @@ export class Meowquee {
   }
 
   pause(): void {
+    this.shouldPlay = false;
+
+    this.suspend();
+  }
+
+  /** Stops the animation without clearing what the caller last asked for. */
+  private suspend(): void {
     if (!this.playing) {
       return;
     }
@@ -394,7 +408,7 @@ export class Meowquee {
       return;
     }
 
-    this.pause();
+    this.suspend();
     this.emit('destroy');
 
     this.resizeObserver?.disconnect();
