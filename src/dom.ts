@@ -62,8 +62,27 @@ export function createRepeat(element: HTMLElement): HTMLElement {
   return repeat;
 }
 
+export function restoreAccessibility(
+  element: HTMLElement,
+  accessibility: 'decorative' | 'content',
+  ariaLabel?: string,
+): void {
+  if (accessibility === 'decorative') {
+    element.removeAttribute('aria-hidden');
+
+    return;
+  }
+
+  if (ariaLabel !== undefined) {
+    element.removeAttribute('aria-label');
+  }
+}
+
 export function restoreMeowqueeDOM(element: HTMLElement, dom: MeowqueeDOM): void {
   dom.track.querySelectorAll('[data-meowquee-repeat]').forEach((clone) => clone.remove());
 
-  dom.track.replaceWith(element);
+  // The viewport took the element's place in the parent, so it is the node that
+  // has to be swapped back. Replacing the track leaves the viewport wrapping the
+  // element, and another wrapper is added on every create/destroy cycle.
+  dom.viewport.replaceWith(element);
 }
