@@ -19,13 +19,14 @@ A lightweight headless marquee engine for building pawesome scrolling content.
 
 > [!NOTE]
 > Marquees are visual by design. Meowquee treats marquee content as decorative/visual by default because continuously moving content should generally not contain important information. If content is genuinely necessary, it should be presented in a way that users have enough time to read and interact with it.
+> **Also,** if you know how to implement vertical marquees, please make a PR or Issue and we can try our best.
 
 ## Installation
 
 ```bash
 npm install meowquee
 bun add meowquee
-pnpm install meowquee
+pnpm add meowquee
 ```
 
 ### CDN
